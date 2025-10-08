@@ -1,6 +1,7 @@
 import header from '../components/header.js';
 import footer from '../components/footer.js';
-import { bindModalEvents } from './modal.js';
+import { bindModalEvents, closeModal } from './modal.js';
+import TransactionsStore, { Transaction } from './store/transactions.js';
 
 
 
@@ -115,5 +116,32 @@ document.addEventListener("DOMContentLoaded", () => {
       modalId: 'transaction-modal',
       openSelector: '#open-add-modal',
     });
-  }
+
+    // Storage and form handling
+    const store = new TransactionsStore();
+
+    const money = (n) => `$${n.toFixed(2)}`;
+    const renderSummary = () => {
+      const { income, expenses, balance } = store.summary();
+      const incomeEl = document.getElementById('total-income');
+      const expEl = document.getElementById('total-expenses');
+      const balEl = document.getElementById('remaining-balance');
+      if (incomeEl) incomeEl.textContent = money(income);
+      if (expEl) expEl.textContent = money(expenses);
+      if (balEl) balEl.textContent = money(balance);
+    };
+
+    renderSummary();
+
+    const form = document.getElementById('transaction-form');
+    form?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const raw = Object.fromEntries(new FormData(form).entries());
+      const tx = Transaction.fromRaw(raw);
+      store.add(tx);
+      form.reset();
+      closeModal('transaction-modal');
+      renderSummary();
+    });
+  } 
 });

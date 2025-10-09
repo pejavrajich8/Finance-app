@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
         header.innerHTML = `
         <div class="wrapper p-4 bg-blue-400 w-full flex justify-between items-center">
           <h1 class="text-2xl">Finance App</h1>
-          <nav class="mr-">
+          <nav>
             <ul class="flex space-x-4">
               <li><a href="index.html" class="hover:text-white">Dashboard</a></li>
               <li><a href="transactions.html" class="hover:text-white">Transactions</a></li>
@@ -14,5 +14,3 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>`;
     }
 });
-
-export default header;

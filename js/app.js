@@ -1,5 +1,6 @@
-import header from '../components/header.js';
-import footer from '../components/footer.js';
+// Import header/footer for side-effects (they render themselves)
+import '../components/header.js';
+import '../components/footer.js';
 import { bindModalEvents, closeModal } from './modal.js';
 import TransactionsStore, { Transaction } from './store/transactions.js';
 
@@ -8,6 +9,7 @@ import TransactionsStore, { Transaction } from './store/transactions.js';
 
 
 document.addEventListener("DOMContentLoaded", () => {
+    document.body.classList.add("flex", "flex-col", "min-h-screen");
   const app = document.getElementById("app");
   if (app) {
     app.innerHTML = `

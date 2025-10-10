@@ -5,6 +5,9 @@ import { bindModalEvents, closeModal } from './modal.js';
 import TransactionsStore, { Transaction } from './store/transactions.js';
 
 
+import { renderCategoryChart } from './charts/categoryCharts.js';
+
+
 
 
 
@@ -38,6 +41,18 @@ document.addEventListener("DOMContentLoaded", () => {
               <span class="material-icons text-indigo-500">account_balance_wallet</span>
             </div>
             <p id="remaining-balance" class="mt-2 text-3xl font-semibold text-indigo-700">$0.00</p>
+          </div>
+        </section>
+
+
+        <!-- Category Chart -->
+        <section id="category-chart-section" class="rounded-lg border p-4 bg-white shadow">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm text-gray-500">Expenses by Category</h2>
+            <span class="material-icons text-gray-400">pie_chart</span>
+          </div>
+          <div class="w-full h-64 mt-3">
+            <canvas id="category-chart-canvas" aria-label="Expenses by category chart" role="img"></canvas>
           </div>
         </section>
 
@@ -78,7 +93,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
               <div>
                 <label for="tx-category" class="block text-sm text-gray-600 mb-1">Category</label>
-                <input id="tx-category" name="category" type="text" class="w-full border rounded p-2" placeholder="e.g. Salary, Groceries" required />
+                <select id="tx-category" name="category" class="w-full border rounded p-2" required>
+                  <option value="salary">Salary</option>
+                  <option value="groceries">Groceries</option>
+                  <option value="utilities">Utilities</option>
+                  <option value="entertainment">Entertainment</option>
+                  <option value="other">Other</option>
+                </select>
               </div>
 
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -134,6 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     renderSummary();
+    renderCategoryChart(store);
 
     const form = document.getElementById('transaction-form');
     form?.addEventListener('submit', (e) => {
@@ -144,6 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
       form.reset();
       closeModal('transaction-modal');
       renderSummary();
+      renderCategoryChart(store);
     });
   } 
 });

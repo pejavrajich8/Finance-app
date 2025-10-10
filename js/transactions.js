@@ -2,6 +2,7 @@ import TransactionsStore from "./store/transactions.js";
 
 // Module-scoped elements and state so other functions can access modal helpers
 let trans = null;
+let total = null;
 let modal = null;
 let modalTitle = null;
 let modalBody = null;
@@ -35,10 +36,47 @@ function closeModal() {
 
 document.addEventListener("DOMContentLoaded", () => {
 
+
+  total = document.getElementById("total");
+  if (total) { 
+      total.innerHTML = `
+    <main id="dashboard" class="container mx-auto p-4 space-y-6">
+        <!-- Summary Cards -->
+        <section id="summary" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="rounded-lg border p-4 bg-white shadow">
+            <div class="flex items-center justify-between">
+              <h2 class="text-sm text-gray-500">Total Income</h2>
+              <span class="material-icons text-green-500">trending_up</span>
+            </div>
+            <p id="total-income" class="mt-2 text-3xl font-semibold text-green-600">$0.00</p>
+          </div>
+
+          <div class="rounded-lg border p-4 bg-white shadow">
+            <div class="flex items-center justify-between">
+              <h2 class="text-sm text-gray-500">Total Expenses</h2>
+              <span class="material-icons text-red-500">trending_down</span>
+            </div>
+            <p id="total-expenses" class="mt-2 text-3xl font-semibold text-red-600">$0.00</p>
+          </div>
+
+          <div class="rounded-lg border p-4 bg-white shadow">
+            <div class="flex items-center justify-between">
+              <h2 class="text-sm text-gray-500">Remaining Balance</h2>
+              <span class="material-icons text-indigo-500">account_balance_wallet</span>
+            </div>
+            <p id="remaining-balance" class="mt-2 text-3xl font-semibold text-blue-700">$0.00</p>
+          </div>
+        </section>
+    </main>`;
+      
+      // Update the summary with actual data
+      updateSummary();
+  }
+
   trans = document.getElementById("trans");
     if (trans) {
         trans.innerHTML = `
-                 <main id="transactions" class="container mx-auto p-4 space-y-6">
+        <main id="transactions" class="container mx-auto p-4 space-y-6">
           <section>
             <h2 class="text-xl font-semibold mb-4">Transaction History</h2>
             <div class="overflow-x-auto">
@@ -240,6 +278,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
+// Function to update the summary cards with actual data
+function updateSummary() {
+  const store = new TransactionsStore();
+  const transactions = store.all();
+  
+  let totalIncome = 0;
+  let totalExpenses = 0;
+  
+  transactions.forEach(tx => {
+    if (tx.type === 'income') {
+      totalIncome += Number(tx.amount);
+    } else if (tx.type === 'expense') {
+      totalExpenses += Number(tx.amount);
+    }
+  });
+  
+  const balance = totalIncome - totalExpenses;
+  
+  const incomeEl = document.getElementById('total-income');
+  const expensesEl = document.getElementById('total-expenses');
+  const balanceEl = document.getElementById('remaining-balance');
+  
+  if (incomeEl) incomeEl.textContent = `$${totalIncome.toFixed(2)}`;
+  if (expensesEl) expensesEl.textContent = `$${totalExpenses.toFixed(2)}`;
+  if (balanceEl) {
+    balanceEl.textContent = `$${balance.toFixed(2)}`;
+    // Update color based on balance
+    if (balance >= 0) {
+      balanceEl.className = 'mt-2 text-3xl font-semibold text-blue-700';
+    } else {
+      balanceEl.className = 'mt-2 text-3xl font-semibold text-red-600';
+    }
+  }
+}
+
 // Functions to manage transactions display and actions
 export function displayTransactions() {
   const store = new TransactionsStore();
@@ -268,6 +341,9 @@ export function displayTransactions() {
           tbody.appendChild(tr);
       });
   }
+  
+  // Update summary whenever transactions are displayed
+  updateSummary();
 }
 
 

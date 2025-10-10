@@ -116,44 +116,67 @@ document.addEventListener("DOMContentLoaded", () => {
             </footer>
           </div>
         </div>
+        
         <!-- Edit Transaction modal -->
         <div id="transaction-edit-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
           <!-- Backdrop -->
           <div class="absolute inset-0 bg-black/50" aria-hidden="true" data-backdrop="true"></div>
 
-          <div class="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6">
-            <header class="flex justify-between items-center mb-4">
-              <h3 class="text-lg font-semibold">Edit Transaction</h3>
-              <button id="edit-modal-close" aria-label="Close" class="hover:text-blue-600">&times;</button>
-            </header>
-            <form id="edit-transaction-form" class="space-y-4">
+          <!-- Dialog -->
+          <div class="relative bg-white w-full max-w-md mx-4 rounded-lg shadow-lg" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
+            <div class="flex items-center justify-between border-b p-4">
+              <h3 id="edit-modal-title" class="text-lg font-semibold">Edit Transaction</h3>
+              <button type="button" id="edit-modal-close" class="p-2 rounded hover:bg-gray-100" aria-label="Close">
+                <span class="material-icons">close</span>
+              </button>
+            </div>
+
+            <form id="edit-transaction-form" class="p-4 space-y-4" novalidate>
               <div>
-                <label for="edit-date" class="block text-sm font-medium text-gray-700">Date</label>
-                <input id="edit-date" type="date" class="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500" required />
-              </div>
-              <div>
-                <label for="edit-notes" class="block text-sm font-medium text-gray-700">Description</label>
-                <input id="edit-notes" type="text" class="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-              </div>
-              <div>
-                <label for="edit-category" class="block text-sm font-medium text-gray-700">Category</label>
-                <input id="edit-category" type="text" class="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-              </div>
-              <div>
-                <label for="edit-amount" class="block text-sm font-medium text-gray-700">Amount</label>
-                <input id="edit-amount" type="number" step="0.01" class="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500" required />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Type</label>
-                <div class="mt-1 flex gap-4">
-                  <label class="inline-flex items-center"><input id="edit-type-income" type="radio" name="edit-type" value="income" class="mr-2"/>Income</label>
-                  <label class="inline-flex items-center"><input id="edit-type-expense" type="radio" name="edit-type" value="expense" class="mr-2"/>Expense</label>
+                <label class="block text-sm text-gray-600 mb-1">Type</label>
+                <div class="flex gap-4">
+                  <label class="flex items-center">
+                    <input type="radio" id="edit-type-income" name="edit-type" value="income" class="mr-2">
+                    Income
+                  </label>
+                  <label class="flex items-center">
+                    <input type="radio" id="edit-type-expense" name="edit-type" value="expense" class="mr-2">
+                    Expense
+                  </label>
                 </div>
               </div>
-              <footer class="flex justify-end gap-2 pt-2">
-                <button type="button" id="edit-cancel" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded">Cancel</button>
-                <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded">Save</button>
-              </footer>
+
+              <div>
+                <label for="edit-category" class="block text-sm text-gray-600 mb-1">Category</label>
+                <select id="edit-category" name="category" class="w-full border rounded p-2" required>
+                  <option value="salary">Salary</option>
+                  <option value="groceries">Groceries</option>
+                  <option value="utilities">Utilities</option>
+                  <option value="entertainment">Entertainment</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label for="edit-amount" class="block text-sm text-gray-600 mb-1">Amount</label>
+                  <input id="edit-amount" name="amount" type="number" step="0.01" min="0" class="w-full border rounded p-2" required />
+                </div>
+                <div>
+                  <label for="edit-date" class="block text-sm text-gray-600 mb-1">Date</label>
+                  <input id="edit-date" name="date" type="date" class="w-full border rounded p-2" required />
+                </div>
+              </div>
+
+              <div>
+                <label for="edit-notes" class="block text-sm text-gray-600 mb-1">Notes</label>
+                <textarea id="edit-notes" name="notes" class="w-full border rounded p-2" rows="3" placeholder="Optional"></textarea>
+              </div>
+
+              <div class="flex justify-end gap-2 pt-2">
+                <button type="button" id="edit-cancel" class="px-4 py-2 rounded border">Cancel</button>
+                <button type="submit" class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">Save Changes</button>
+              </div>
             </form>
           </div>
         </div>

@@ -3,6 +3,28 @@ Chart.register(...registerables);
 
 let chartInstance = null;
 
+// Fixed colors for the categories you requested (keys are lowercased for case-insensitive lookup).
+const FIXED_CATEGORY_COLORS = {
+    groceries: '#60a5fa',    // blue
+    utilities: '#34d399',    // green
+    entertainment: '#ef4444', // red
+    rent: '#f97316',         // orange
+};
+
+// Return a pinned color for known categories (case-insensitive), otherwise gray.
+function getColorForCategory(cat) {
+    const name = String(cat || '').trim();
+    if (!name) return '#9ca3af'; // gray fallback for falsy
+    const key = name.toLowerCase();
+    if (Object.prototype.hasOwnProperty.call(FIXED_CATEGORY_COLORS, key)) {
+        return FIXED_CATEGORY_COLORS[key];
+    }
+    // All other categories use a neutral gray so colors don't change.
+    return '#9ca3af';
+}
+
+// Helper to get all transactions from various store implementations
+
 function getTransactions(store) {
     if (!store) return [];
     if (typeof store.all === 'function') return store.all();
@@ -10,6 +32,8 @@ function getTransactions(store) {
     return store._data ?? store.transactions ?? [];
 }
 
+
+// Renders a doughnut chart of expenses by category
 export function renderCategoryChart(store) {
     const canvas = document.getElementById('category-chart-canvas');
     if (!canvas) return;
@@ -19,6 +43,8 @@ export function renderCategoryChart(store) {
     const txs = getTransactions(store);
     console.log('All transactions:', txs);
     
+
+    // Aggregate expenses by category
     const totals = new Map();
     txs.forEach(t => {
         console.log('Processing transaction:', t);
@@ -31,12 +57,15 @@ export function renderCategoryChart(store) {
         totals.set(cat, (totals.get(cat) || 0) + amount);
     });
 
+
+    // Log the category totals
     console.log('Category totals:', Object.fromEntries(totals));
     const labels = Array.from(totals.keys());
     const data = Array.from(totals.values());
     console.log('Chart labels:', labels);
     console.log('Chart data:', data);
 
+    // Destroy previous chart if exists
     if (chartInstance) {
         chartInstance.destroy();
         chartInstance = null;
@@ -52,26 +81,22 @@ export function renderCategoryChart(store) {
         parent?.appendChild(msg);
         return;
     }
-     
-    const colors = [
-        '#60a5fa', '#f97316', '#34d399', '#fbbf24', '#a78bfa',
-        '#f87171', '#38bdf8', '#f472b6', '#22c55e', '#e879f9'
-    ];
-    
-    chartInstance = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels,
-            datasets: [{
-                data,
-                backgroundColor: labels.map((_, i) => colors[i % colors.length])
-            }]
-        },
-      options: {
-      plugins: { legend: { position: 'bottom' }, tooltip: { mode: 'index' } },
-      maintainAspectRatio: false
-    }
-  });
+
+        // Create new chart with deterministic colors per category
+        chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                        labels,
+                        datasets: [{
+                                data,
+                                backgroundColor: labels.map(label => getColorForCategory(label))
+                        }]
+                },
+            options: {
+            plugins: { legend: { position: 'bottom' }, tooltip: { mode: 'index' } },
+            maintainAspectRatio: false
+        }
+    });
 }
 
 // Example usage:

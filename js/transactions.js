@@ -38,18 +38,18 @@ document.addEventListener("DOMContentLoaded", () => {
   trans = document.getElementById("trans");
     if (trans) {
         trans.innerHTML = `
-        <main id="transactions" class="container mx-auto p-4 space-y-6">
+                 <main id="transactions" class="container mx-auto p-4 space-y-6">
           <section>
             <h2 class="text-xl font-semibold mb-4">Transaction History</h2>
             <div class="overflow-x-auto">
-              <table class="min-w-full bg-white border border-gray-200">
+              <table class="min-w-full w-full table-auto bg-white border border-gray-200">
                 <thead>
                   <tr class="bg-gray-100">
-                    <th class="py-2 px-4 border-b">Date</th>
-                    <th class="py-2 px-4 border-b">Description</th>
-                    <th class="py-2 px-4 border-b">Category</th>
-                    <th class="py-2 px-4 border-b">Amount</th>
-                    <th class="py-2 px-4 border-b">Type</th>
+                    <th class="py-2 px-4 border-b text-left whitespace-nowrap">Date</th>
+                    <th class="py-2 px-4 border-b text-left">Description</th>
+                    <th class="py-2 px-4 border-b text-left whitespace-nowrap">Category</th>
+                    <th class="py-2 px-4 border-b text-right whitespace-nowrap">Amount</th>
+                    <th class="py-2 px-4 border-b text-left whitespace-nowrap">Type</th>
                   </tr>
                 </thead>
                 <tbody id="transaction-list">
@@ -60,8 +60,11 @@ document.addEventListener("DOMContentLoaded", () => {
           </section>
         </main>
   <!-- Modal for the transaction details -->
-  <div id="transaction-modal" class="hidden fixed inset-0 bg-black bg-opacity-40 z-50 items-center justify-center">
-          <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-4">
+  <div id="transaction-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
+          <!-- Backdrop -->
+          <div class="absolute inset-0 bg-black/50" aria-hidden="true" data-backdrop="true"></div>
+
+          <div class="relative bg-white rounded-lg shadow-lg w-full max-w-md p-4">
             <header class="flex justify-between items-center mb-4">
               <h3 id="modal-title" class="text-lg font-semibold">Transaction</h3>
               <button id="modal-close" aria-label="Close" class="hover:text-blue-600">&times;</button>
@@ -76,8 +79,11 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         </div>
         <!-- Edit Transaction modal -->
-        <div id="transaction-edit-modal" class="hidden fixed inset-0 bg-black bg-opacity-40 z-50 items-center justify-center">
-          <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+        <div id="transaction-edit-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
+          <!-- Backdrop -->
+          <div class="absolute inset-0 bg-black/50" aria-hidden="true" data-backdrop="true"></div>
+
+          <div class="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6">
             <header class="flex justify-between items-center mb-4">
               <h3 class="text-lg font-semibold">Edit Transaction</h3>
               <button id="edit-modal-close" aria-label="Close" class="hover:text-blue-600">&times;</button>
@@ -126,9 +132,10 @@ document.addEventListener("DOMContentLoaded", () => {
   modalDelete = document.getElementById('modal-delete');
 
   modalClose?.addEventListener('click', closeModal);
-  // close when clicking backdrop
+  // close when clicking backdrop (explicit backdrop element)
   modal?.addEventListener('click', (e) => {
-    if (e.target === modal) closeModal();
+    const target = /** @type {HTMLElement} */ (e.target);
+    if (target?.dataset?.backdrop === 'true') closeModal();
   });
 
   // Edit: emit an event others can listen to
@@ -192,9 +199,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   editModalClose?.addEventListener('click', closeEditModal);
   editCancel?.addEventListener('click', closeEditModal);
-  // close when clicking backdrop
+  // close when clicking backdrop (explicit backdrop element)
   editModal?.addEventListener('click', (e) => {
-    if (e.target === editModal) closeEditModal();
+    const target = /** @type {HTMLElement} */ (e.target);
+    if (target?.dataset?.backdrop === 'true') closeEditModal();
   });
 
   // Listen for edit requests
@@ -243,6 +251,7 @@ export function displayTransactions() {
           const tr = document.createElement('tr');
           tr.className = 'hover:bg-gray-50 cursor-pointer';
           tr.dataset.id = tx.id;
+          
           tr.innerHTML = `
               <td class="py-2 px-4 border-b">${tx.date}</td>
               <td class="py-2 px-4 border-b">${tx.notes || 'N/A'}</td>
@@ -250,8 +259,9 @@ export function displayTransactions() {
               <td class="py-2 px-4 border-b text-right ${tx.type === 'income' ? 'text-green-600' : 'text-red-600'}">
                   ${tx.type === 'income' ? '+' : '-'}$${tx.amount.toFixed(2)}
               </td>
-              <td class="py-2 px-4 border-b capitalize">${tx.type}</td>
+              <td class="p-3 border-b capitalize">${tx.type}</td>
           `;
+        
           // open modal on row click
           tr.addEventListener('click', () => openModal(tx));
 

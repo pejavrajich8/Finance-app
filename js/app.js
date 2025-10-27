@@ -1,4 +1,3 @@
-// Import header/footer for side-effects (they render themselves)
 import '../components/header.js';
 import '../components/footer.js';
 import { bindModalEvents, closeModal } from './modal.js';
@@ -86,9 +85,9 @@ document.addEventListener("DOMContentLoaded", () => {
               <div>
                 <label for="tx-type" class="block text-sm text-gray-600 mb-1">Type</label>
                 <select id="tx-type" name="type" class="w-full border rounded p-2" required>
-                  <option value="income">Income</option>
                   <option value="expense">Expense</option>
-                </select>
+                  <option value="income">Income</option>
+                  </select>
               </div>
 
               <div>
@@ -98,6 +97,10 @@ document.addEventListener("DOMContentLoaded", () => {
                   <option value="groceries">Groceries</option>
                   <option value="utilities">Utilities</option>
                   <option value="entertainment">Entertainment</option>
+                  <option value="rent">Rent</option>
+                  <option value="food & dining">Food & Dining</option>
+                  <option value="transportation">Transportation</option>
+                  <option value="health & medical">Health & Medical</option>
                   <option value="other">Other</option>
                 </select>
               </div>

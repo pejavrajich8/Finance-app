@@ -9,6 +9,9 @@ const FIXED_CATEGORY_COLORS = {
     utilities: '#34d399',    // green
     entertainment: '#ef4444', // red
     rent: '#f97316',         // orange
+    'food-dining': '#8b5cf6', // purple
+    transportation: '#06b6d4', // cyan
+    'health & medical': '#10b981', // emerald
 };
 
 // Return a pinned color for known categories (case-insensitive), otherwise gray.
@@ -99,6 +102,3 @@ export function renderCategoryChart(store) {
     });
 }
 
-// Example usage:
-// const store = new TransactionsStore();
-// renderCategoryChart(store);

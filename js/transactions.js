@@ -153,6 +153,10 @@ document.addEventListener("DOMContentLoaded", () => {
                   <option value="groceries">Groceries</option>
                   <option value="utilities">Utilities</option>
                   <option value="entertainment">Entertainment</option>
+                  <option value="rent">Rent</option>
+                  <option value="food & dining">Food & Dining</option>
+                  <option value="transportation">Transportation</option>
+                  <option value="health & medical">Health & Medical</option>
                   <option value="other">Other</option>
                 </select>
               </div>

@@ -1,0 +1,175 @@
+import '../components/header.js';
+import '../components/footer.js';
+import { bindModalEvents, closeModal } from './modal.js';
+import TransactionsStore, { Transaction } from './store/transactions.js';
+
+
+import { renderCategoryChart } from './charts/categoryCharts.js';
+
+
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    document.body.classList.add("flex", "flex-col", "min-h-screen");
+  const app = document.getElementById("app");
+  if (app) {
+    app.innerHTML = `
+      <main id="dashboard" class="container mx-auto p-4 space-y-6">
+        <!-- Summary Cards -->
+        <section id="summary" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="rounded-lg border p-4 bg-white shadow">
+            <div class="flex items-center justify-between">
+              <h2 class="text-sm text-gray-500">Total Income</h2>
+              <span class="material-icons text-green-500">trending_up</span>
+            </div>
+            <p id="total-income" class="mt-2 text-3xl font-semibold text-green-600">$0.00</p>
+          </div>
+
+          <div class="rounded-lg border p-4 bg-white shadow">
+            <div class="flex items-center justify-between">
+              <h2 class="text-sm text-gray-500">Total Expenses</h2>
+              <span class="material-icons text-red-500">trending_down</span>
+            </div>
+            <p id="total-expenses" class="mt-2 text-3xl font-semibold text-red-600">$0.00</p>
+          </div>
+
+          <div class="rounded-lg border p-4 bg-white shadow">
+            <div class="flex items-center justify-between">
+              <h2 class="text-sm text-gray-500">Remaining Balance</h2>
+              <span class="material-icons text-indigo-500">account_balance_wallet</span>
+            </div>
+            <p id="remaining-balance" class="mt-2 text-3xl font-semibold text-indigo-700">$0.00</p>
+          </div>
+        </section>
+
+
+        <!-- Category Chart -->
+        <section id="category-chart-section" class="rounded-lg border p-4 bg-white shadow">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm text-gray-500">Expenses by Category</h2>
+            <span class="material-icons text-gray-400">pie_chart</span>
+          </div>
+          <div class="w-full h-64 mt-3">
+            <canvas id="category-chart-canvas" aria-label="Expenses by category chart" role="img"></canvas>
+          </div>
+        </section>
+
+        <!-- Actions -->
+        <section id="actions" class="flex flex-wrap items-center gap-3">
+          <a href="#add-transaction" id="open-add-modal" aria-controls="transaction-modal" class="inline-flex items-center gap-2 px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">
+            <span class="material-icons">add_circle</span>
+            Add Transaction
+          </a>
+          <a href="#transactions" id="transactionbtn" class="inline-flex items-center gap-2 px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-50">
+            <span class="material-icons">history</span>
+            Transaction History
+          </a>
+        </section>
+
+        <!-- Modal: Add Transaction -->
+        <div id="transaction-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
+          <!-- Backdrop -->
+          <div class="absolute inset-0 bg-black/50" aria-hidden="true"></div>
+
+          <!-- Dialog -->
+          <div class="relative bg-white w-full max-w-md mx-4 rounded-lg shadow-lg" role="dialog" aria-modal="true" aria-labelledby="transaction-modal-title">
+            <div class="flex items-center justify-between border-b p-4">
+              <h3 id="transaction-modal-title" class="text-lg font-semibold">Add Transaction</h3>
+              <button type="button" class="p-2 rounded hover:bg-gray-100" aria-label="Close" data-close="modal">
+                <span class="material-icons">close</span>
+              </button>
+            </div>
+
+            <form id="transaction-form" class="p-4 space-y-4" novalidate>
+              <div>
+                <label for="tx-type" class="block text-sm text-gray-600 mb-1">Type</label>
+                <select id="tx-type" name="type" class="w-full border rounded p-2" required>
+                  <option value="expense">Expense</option>
+                  <option value="income">Income</option>
+                  </select>
+              </div>
+
+              <div>
+                <label for="tx-category" class="block text-sm text-gray-600 mb-1">Category</label>
+                <select id="tx-category" name="category" class="w-full border rounded p-2" required>
+                  <option value="salary">Salary</option>
+                  <option value="groceries">Groceries</option>
+                  <option value="utilities">Utilities</option>
+                  <option value="entertainment">Entertainment</option>
+                  <option value="rent">Rent</option>
+                  <option value="food & dining">Food & Dining</option>
+                  <option value="transportation">Transportation</option>
+                  <option value="health & medical">Health & Medical</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label for="tx-amount" class="block text-sm text-gray-600 mb-1">Amount</label>
+                  <input id="tx-amount" name="amount" type="number" step="0.01" min="0" class="w-full border rounded p-2" required />
+                </div>
+                <div>
+                  <label for="tx-date" class="block text-sm text-gray-600 mb-1">Date</label>
+                  <input id="tx-date" name="date" type="date" class="w-full border rounded p-2" required />
+                </div>
+              </div>
+
+              <div>
+                <label for="tx-notes" class="block text-sm text-gray-600 mb-1">Notes</label>
+                <textarea id="tx-notes" name="notes" class="w-full border rounded p-2" rows="3" placeholder="Optional"></textarea>
+              </div>
+
+              <div class="flex justify-end gap-2 pt-2">
+                <button type="button" class="px-4 py-2 rounded border" data-close="modal">Cancel</button>
+                <button type="submit" class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    `;
+
+    // After rendering, wire events once
+    const navigateToTransactions = () => {
+      window.location.href = 'transactions.html';
+    };
+    document.getElementById('transactionbtn')?.addEventListener('click', navigateToTransactions);
+
+    // Bind modal events
+    bindModalEvents({
+      modalId: 'transaction-modal',
+      openSelector: '#open-add-modal',
+    });
+
+    // Storage and form handling
+    const store = new TransactionsStore();
+
+    const money = (n) => `$${n.toFixed(2)}`;
+    const renderSummary = () => {
+      const { income, expenses, balance } = store.summary();
+      const incomeEl = document.getElementById('total-income');
+      const expEl = document.getElementById('total-expenses');
+      const balEl = document.getElementById('remaining-balance');
+      if (incomeEl) incomeEl.textContent = money(income);
+      if (expEl) expEl.textContent = money(expenses);
+      if (balEl) balEl.textContent = money(balance);
+    };
+
+    renderSummary();
+    renderCategoryChart(store);
+
+    const form = document.getElementById('transaction-form');
+    form?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const raw = Object.fromEntries(new FormData(form).entries());
+      const tx = Transaction.fromRaw(raw);
+      store.add(tx);
+      form.reset();
+      closeModal('transaction-modal');
+      renderSummary();
+      renderCategoryChart(store);
+    });
+  } 
+});

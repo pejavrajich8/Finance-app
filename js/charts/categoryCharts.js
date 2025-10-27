@@ -3,7 +3,7 @@ Chart.register(...registerables);
 
 let chartInstance = null;
 
-// Fixed colors for the categories you requested (keys are lowercased for case-insensitive lookup).
+
 const FIXED_CATEGORY_COLORS = {
     groceries: '#60a5fa',    // blue
     utilities: '#34d399',    // green
@@ -22,7 +22,7 @@ function getColorForCategory(cat) {
     if (Object.prototype.hasOwnProperty.call(FIXED_CATEGORY_COLORS, key)) {
         return FIXED_CATEGORY_COLORS[key];
     }
-    // All other categories use a neutral gray so colors don't change.
+    
     return '#9ca3af';
 }
 
